@@ -39,12 +39,12 @@ const data = {
   },
   navMain: [
     {
-      title: "Dashboard",
+      title: "Outpass",
       url: "#",
       icon: IconDashboard,
     },
     {
-      title: "Lifecycle",
+      title: "Mess",
       url: "#",
       icon: IconListDetails,
     },
