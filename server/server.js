@@ -14,7 +14,9 @@ MongoClient.connect(DB_URL)
   .then((client) => {
     const dbObj = client.db("webathon3");
     const usersCollection = dbObj.collection("usersCollection");
+    const complaintsCollection = dbObj.collection("complaintsCollection");
     app.set("usersCollection", usersCollection);
+    app.set("complaintsCollection", complaintsCollection);
     console.log("Connected to Database");
   })
   .catch((err) => {
@@ -27,7 +29,9 @@ app.get("/", (req, res) => {
 
 // Import routes
 const userApp = require("./APIs/user-api");
+const complaintApp = require("./APIs/complaints-api");
 app.use("/user-api", userApp);
+app.use("/complaints-api", complaintApp);
 
 
 // Error-handling middleware

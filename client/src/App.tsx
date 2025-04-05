@@ -4,6 +4,7 @@ import RootLayout from "./RootLayout";
 import Login from "./pages/Authentication/Login";
 import Register from "./pages/Authentication/Register";
 import Dashboard from "./pages/Dashboard";
+import UploadComplaint from "./pages/Complaints/UploadComplaint";
 function App() {
   const router = createBrowserRouter([
     {
@@ -19,9 +20,12 @@ function App() {
           element: <Dashboard></Dashboard>,
         },
         {
-          path: "/register",
+          path: "/upload-data",
           element: <Register />,
-        },
+        },{
+          path: "/upload-complaint",
+          element: <UploadComplaint />,
+        }
       ]
     }
   ]);
