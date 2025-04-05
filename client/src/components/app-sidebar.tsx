@@ -31,12 +31,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-
+const username=localStorage.getItem("name");
+const email=localStorage.getItem("email");
 
 const userData = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: username,
+    email: email,
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
@@ -266,7 +267,14 @@ const adminData = {
     },
   ],
 }
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  // Get email from localStorage
+  const storedEmail = localStorage.getItem("email");
+  const isAdmin = storedEmail === "vnrhostel1@vnrvjiet.in";
+
+  const data = isAdmin ? adminData : userData;
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -278,7 +286,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="#">
                 <IconInnerShadowTop className="!size-5" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <span className="text-base font-semibold">Welcome, {username}</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -293,5 +301,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={adminData.user} />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
