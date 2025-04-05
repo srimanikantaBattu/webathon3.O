@@ -12,6 +12,9 @@ const DB_URL = process.env.DB_URL;
 // Connect to MongoDB
 MongoClient.connect(DB_URL)
   .then((client) => {
+    const dbObj = client.db("webathon3");
+    const usersCollection = dbObj.collection("usersCollection");
+    app.set("usersCollection", usersCollection);
     console.log("Connected to Database");
   })
   .catch((err) => {
@@ -23,8 +26,8 @@ app.get("/", (req, res) => {
 });
 
 // Import routes
-
-
+const userApp = require("./APIs/user-api");
+app.use("/user-api", userApp);
 
 
 // Error-handling middleware
