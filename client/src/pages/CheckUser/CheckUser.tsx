@@ -15,7 +15,7 @@ import { toast } from "sonner"
 import { Camera, CheckCircle, Loader2, Search, User, UserCheck, UserX } from "lucide-react"
 
 // Sample student data - replace with your actual data source
-const sampleStudents = [
+const sampleStudents: Student[] = [
   {
     id: "1",
     name: "Alex Johnson",
