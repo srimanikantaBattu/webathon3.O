@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-// import { Calendar } from "@/components/ui/calendar"
+import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import {
@@ -78,7 +78,7 @@ export default function SlotBooking({ location }: SlotBookingProps) {
           <Card className="bg-[#0a2e52] border-blue-800 text-white">
             <CardContent className="pt-6">
               <h3 className="text-lg font-medium mb-4 text-blue-300">1. Select Date</h3>
-              {/* <Calendar
+              <Calendar
                 mode="single"
                 selected={date}
                 onSelect={setDate}
@@ -93,7 +93,7 @@ export default function SlotBooking({ location }: SlotBookingProps) {
                   today.setHours(0, 0, 0, 0)
                   return date < today
                 }}
-              /> */}
+              />
             </CardContent>
           </Card>
 

@@ -42,28 +42,28 @@ const userData = {
   },
   navMain: [
     {
-      title: "Outpass",
-      url: "#",
+      title: "Slot Booking",
+      url: "campus-map",
       icon: IconDashboard,
     },
     {
-      title: "Mess",
-      url: "#",
+      title: "Fee Payment",
+      url: "payment-details",
       icon: IconListDetails,
     },
     {
-      title: "Analytics",
-      url: "#",
+      title: "Menu Feed",
+      url: "feedback",
       icon: IconChartBar,
     },
     {
-      title: "Projects",
-      url: "#",
+      title: "Complaints",
+      url: "upload-complaint",
       icon: IconFolder,
     },
     {
-      title: "Team",
-      url: "#",
+      title: "Outpass",
+      url: "request-outings",
       icon: IconUsers,
     },
   ],
@@ -159,30 +159,54 @@ const adminData = {
   },
   navMain: [
     {
-      title: "Student import",
-      url: "upload-data",
+      title: "Check Outings",
+      url: "/check-outings",
       icon: IconDashboard,
     },
     {
-      title: "Mess",
-      url: "#",
+      title: "Room Allocation",
+      url: "/room-allocation",
       icon: IconListDetails,
     },
     {
-      title: "Analytics",
-      url: "#",
+      title: "Add Payments",
+      url: "/add-payments",
       icon: IconChartBar,
     },
     {
-      title: "Projects",
-      url: "#",
+      title: "Complaint Section",
+      url: "/upload-complaint",
       icon: IconFolder,
     },
     {
-      title: "Team",
-      url: "#",
+      title: "Student Tracking",
+      url: "/find",
+      icon: IconUsers,
+    },{
+      title: "User Management",
+      url: "/check-user",
+      icon: IconChartBar,
+    },
+    {
+      title: "Menu Feedback",
+      url: "/admin/feedback",
+      icon: IconFolder,
+    },
+    {
+      title: "Menu Edit",
+      url: "/admin/menu",
       icon: IconUsers,
     },
+    {
+      title: "Analytics",
+      url: "/admin/feedback",
+      icon: IconFolder,
+    },
+    {
+      title: "Menu Edit",
+      url: "/admin/menu",
+      icon: IconUsers,
+    }
   ],
   navClouds: [
     {
