@@ -20,7 +20,17 @@ export const hostelSchema = z.object({
   status: z.string(),
 })
 
-const columns = [
+type Hostel = z.infer<typeof hostelSchema>
+
+// Define a type for our column configuration
+type ColumnDef = {
+  accessorKey: keyof Hostel | 'occupancyRate';
+  header: string;
+  id?: string;
+  cell?: ({ row }: { row: { original: Hostel } }) => React.ReactNode;
+}
+
+const columns: ColumnDef[] = [
   {
     accessorKey: "block",
     header: "Block",
@@ -58,7 +68,7 @@ const columns = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.original.status
-      let variant: "default" | "secondary" | "destructive" | "outline"
+      let variant: "default" | "secondary" | "destructive" | "outline" = "default"
       
       if (status === "Fully Operational") variant = "default"
       else if (status === "Under Maintenance") variant = "outline"
@@ -69,14 +79,14 @@ const columns = [
   },
 ]
 
-export function HostelTable({ data }: { data: z.infer<typeof hostelSchema>[] }) {
+export function HostelTable({ data }: { data: Hostel[] }) {
   return (
     <div className="rounded-lg border">
       <Table>
         <TableHeader>
           <TableRow>
             {columns.map((column) => (
-              <TableHead key={column.accessorKey || column.id}>
+              <TableHead key={column.accessorKey.toString()}>
                 {column.header}
               </TableHead>
             ))}
@@ -86,10 +96,12 @@ export function HostelTable({ data }: { data: z.infer<typeof hostelSchema>[] }) 
           {data.map((hostel) => (
             <TableRow key={hostel.id}>
               {columns.map((column) => (
-                <TableCell key={column.accessorKey || column.id}>
+                <TableCell key={column.accessorKey.toString()}>
                   {column.cell
                     ? column.cell({ row: { original: hostel } })
-                    : hostel[column.accessorKey]}
+                    : column.accessorKey !== 'occupancyRate' 
+                      ? hostel[column.accessorKey as keyof Hostel]
+                      : null}
                 </TableCell>
               ))}
             </TableRow>
@@ -100,6 +112,6 @@ export function HostelTable({ data }: { data: z.infer<typeof hostelSchema>[] }) 
   )
 }
 
-export function DataTable({ data }: { data: z.infer<typeof hostelSchema>[] }) {
+export function DataTable({ data }: { data: Hostel[] }) {
   return <HostelTable data={data} />
 }

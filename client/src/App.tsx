@@ -16,6 +16,9 @@ import MenuDisplay from "./pages/Mess/Menudisplay";
 import StudentFeedbackForm from "./pages/Mess/FeedbackForm";
 import AdminFeedbackList from "./pages/Mess/AdminFeedbackView";
 import AdminMenuEdit from "./pages/Mess/AdminMenuEdit";
+import RoomAllocation from "./pages/RoomAllocation/RoomAllocation";
+import CampusMap from "./pages/Playground/CampusMap";
+import NearbyUsers from "./pages/NearByUsers";
 function App() {
   const router = createBrowserRouter([
     {
@@ -66,6 +69,15 @@ function App() {
         },{
           path:"/admin/menu",
           element:<AdminMenuEdit />
+        },{
+          path:"/room-allocation",
+          element:<RoomAllocation />
+        },{
+          path:"/campus-map",
+          element:<CampusMap/>
+        },{
+          path:"/find",
+          element:<NearbyUsers/>
         }
       ]
     }
