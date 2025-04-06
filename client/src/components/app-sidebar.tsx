@@ -31,8 +31,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-const username=localStorage.getItem("name");
-const email=localStorage.getItem("email");
+const username=localStorage.getItem("name") || "";
+const email=localStorage.getItem("email") || "";
 
 const userData = {
   user: {
@@ -153,8 +153,8 @@ const userData = {
 
 const adminData = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: username,
+    email: email,
     avatar: "/avatars/shadcn.jpg",
   },
   navMain: [
@@ -293,12 +293,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={adminData.navMain} />
-        <NavDocuments items={adminData.documents} />
-        <NavSecondary items={adminData.navSecondary} className="mt-auto" />
+        <NavMain items={data.navMain} />
+        <NavDocuments items={data.documents} />
+        <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={adminData.user} />
+        <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
   );

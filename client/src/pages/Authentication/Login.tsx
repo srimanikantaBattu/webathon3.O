@@ -32,10 +32,17 @@ export default function LoginForm({
         `${import.meta.env.VITE_REACT_APP_BACKEND_URL}/user-api/login`,
         data
       );
+      console.log(response)
       console.log("Login successful:", response.data);
       localStorage.setItem("email", response.data.user.email);
       localStorage.setItem("name", response.data.user.name);
-      // localStorage.setItem("userId", response.data.userId);
+      localStorage.setItem("rollno", response.data.user.rollno);
+      localStorage.setItem("mobile", response.data.user.mobile);
+      localStorage.setItem("fathername", response.data.user.fathername);
+      localStorage.setItem("father_mobile", response.data.user.father_mobile);
+      localStorage.setItem("room_no", response.data.user.room_no);
+      localStorage.setItem("branch", response.data.user.branch);
+      localStorage.setItem("startyear", response.data.user.startyear);
 
       navigate("/");
     } catch (err: any) {

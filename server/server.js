@@ -1,6 +1,7 @@
 const exp = require("express");
 const app = exp();
 const { MongoClient } = require("mongodb");
+const cron = require("node-cron");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -11,12 +12,20 @@ const DB_URL = process.env.DB_URL;
 
 // Connect to MongoDB
 MongoClient.connect(DB_URL)
-  .then((client) => {
+  .then(async (client) => {
     const dbObj = client.db("webathon3");
     const usersCollection = dbObj.collection("usersCollection");
+    const paymentsCollections = dbObj.collection("paymentsCollection");
     const complaintsCollection = dbObj.collection("complaintsCollection");
+    const outingsCollection = dbObj.collection("outingsCollection");
+    const menuCollection = dbObj.collection("menu");
+    const feedbackCollection = dbObj.collection("feedbacks");
     app.set("usersCollection", usersCollection);
     app.set("complaintsCollection", complaintsCollection);
+    app.set("paymentsCollection", paymentsCollections);
+    app.set("outingsCollection", outingsCollection);
+    app.set("menuCollection", menuCollection);
+    app.set("feedbackCollection", feedbackCollection);
     console.log("Connected to Database");
   })
   .catch((err) => {
@@ -30,8 +39,17 @@ app.get("/", (req, res) => {
 // Import routes
 const userApp = require("./APIs/user-api");
 const complaintApp = require("./APIs/complaints-api");
+const paymentsApp = require("./APIs/payments-api");
+const outingsApp = require("./APIs/outings-api");
+const menuApp = require("./APIs/menu-api");
+const feedbackApp = require("./APIs/feedback-api");
+
+app.use("/feedback-api", feedbackApp);
 app.use("/user-api", userApp);
 app.use("/complaints-api", complaintApp);
+app.use("/payments-api", paymentsApp);
+app.use("/outings-api", outingsApp);
+app.use("/menu-api", menuApp);
 
 
 // Error-handling middleware

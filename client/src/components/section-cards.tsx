@@ -1,5 +1,4 @@
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react"
-
+import { IconCalendarEvent, IconUsers, IconBed, IconSoup } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import {
   Card,
@@ -12,89 +11,100 @@ import {
 
 export function SectionCards() {
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+    <div className=":data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark::data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+      {/* Current Residents Card */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Total Revenue</CardDescription>
+          <CardDescription>Current Residents</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            $1,250.00
+            1250
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +12.5%
+            <Badge variant="outline" className="flex items-center gap-1">
+              <IconUsers className="size-4" />
+              95% Occupancy
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Trending up this month <IconTrendingUp className="size-4" />
+            <span className="text-green-500">12 new arrivals this week</span>
           </div>
           <div className="text-muted-foreground">
-            Visitors for the last 6 months
+            Capacity: 360 beds across 4 blocks
           </div>
         </CardFooter>
       </Card>
+
+      {/* Upcoming Events Card */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>New Customers</CardDescription>
+          <CardDescription>Upcoming Events</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            1,234
+            3 Events
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <IconTrendingDown />
-              -20%
+            <Badge variant="outline" className="flex items-center gap-1">
+              <IconCalendarEvent className="size-4" />
+              This Week
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Down 20% this period <IconTrendingDown className="size-4" />
+            Cultural Night (Fri), Sports Day (Sat)
           </div>
           <div className="text-muted-foreground">
-            Acquisition needs attention
+            Check notice board for details
           </div>
         </CardFooter>
       </Card>
+
+      {/* Meal Satisfaction Card */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Active Accounts</CardDescription>
+          <CardDescription>Meal Satisfaction</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            45,678
+            82%
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +12.5%
+            <Badge variant="outline" className="flex items-center gap-1">
+              <IconSoup className="size-4" />
+              +5% this month
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Strong user retention <IconTrendingUp className="size-4" />
+            Today's special: Butter Chicken
           </div>
-          <div className="text-muted-foreground">Engagement exceed targets</div>
+          <div className="text-muted-foreground">
+            Based on recent feedback surveys
+          </div>
         </CardFooter>
       </Card>
+
+      {/* Maintenance Requests Card */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Growth Rate</CardDescription>
+          <CardDescription>Maintenance Status</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            4.5%
+            8 Open
           </CardTitle>
           <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +4.5%
+            <Badge variant="outline" className="flex items-center gap-1">
+              <IconBed className="size-4" />
+              90% Resolved
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Steady performance increase <IconTrendingUp className="size-4" />
+            Avg. resolution time: 2.1 days
           </div>
-          <div className="text-muted-foreground">Meets growth projections</div>
+          <div className="text-muted-foreground">
+            Submit requests via hostel portal
+          </div>
         </CardFooter>
       </Card>
     </div>
