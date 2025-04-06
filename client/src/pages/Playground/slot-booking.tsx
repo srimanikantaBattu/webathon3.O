@@ -84,8 +84,8 @@ export default function SlotBooking({ location }: SlotBookingProps) {
                 onSelect={setDate}
                 className="rounded-md border border-blue-800 bg-[#0a2e52] text-white"
                 styles={{
-                  day_today: { backgroundColor: "#1e40af" },
-                  day_selected: { backgroundColor: "#3b82f6", color: "white" },
+                  // day_today: { backgroundColor: "#1e40af" },
+                  // day_selected: { backgroundColor: "#3b82f6", color: "white" },
                 }}
                 disabled={(date) => {
                   // Disable past dates
