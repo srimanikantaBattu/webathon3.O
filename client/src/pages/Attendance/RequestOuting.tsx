@@ -1,4 +1,4 @@
-"use client"
+
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
@@ -16,14 +16,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
-import { CalendarIcon, Clock, CheckCircle2 } from "lucide-react"
+import { CalendarIcon, Clock, CheckCircle2, XCircle, AlertCircle } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { toast } from "sonner" // Changed from @/components/ui/use-toast to sonner
+import { toast } from "sonner"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import axios from "axios"
 
 // Form validation schema
@@ -50,6 +51,10 @@ export default function RequestOuting() {
     startyear: "",
   })
 
+  const [approvedOutings, setApprovedOutings] = useState([])
+  const [pendingOutings, setPendingOutings] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+
   // Initialize form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -60,6 +65,24 @@ export default function RequestOuting() {
       returnTime: "",
     },
   })
+
+  // Fetch outings data
+  const fetchOutings = async () => {
+    setIsLoading(true)
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_REACT_APP_BACKEND_URL}/outings-api/get-outings/${localStorage.getItem("rollno")}`,
+      )
+      const outings = response.data.data
+      setApprovedOutings(outings.filter((outing: any) => outing.status === "approved"))
+      setPendingOutings(outings.filter((outing: any) => outing.status === "pending"))
+    } catch (error) {
+      console.error("Error fetching outings data:", error)
+      toast.error("Failed to fetch outings data")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   // Load user data from localStorage
   useEffect(() => {
@@ -81,6 +104,8 @@ export default function RequestOuting() {
       if (data.father_mobile) {
         form.setValue("fatherNumber", data.father_mobile)
       }
+
+      fetchOutings()
     }
   }, [form])
 
@@ -94,40 +119,72 @@ export default function RequestOuting() {
       requestDate: new Date(),
     }
 
-    // Log the form data to console
-    
-    const result = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_URL}/outings-api/add-outing`, requestData);
-    if(!result.data.success){
-      toast.error(result.data.message)
-      return
+    try {
+      const result = await axios.post(
+        `${import.meta.env.VITE_REACT_APP_BACKEND_URL}/outings-api/add-outing`,
+        requestData,
+      )
+      if (!result.data.success) {
+        toast.error(result.data.message)
+        return
+      }
+
+      // Show success toast with Sonner
+      toast.success("Request Submitted", {
+        description: "Your outing request has been submitted successfully.",
+        icon: <CheckCircle2 className="h-4 w-4" />,
+        duration: 5000,
+      })
+
+      // Close the dialog and show the status
+      setSubmitted(true)
+      setOpen(false)
+
+      // Refresh outings data
+      fetchOutings()
+    } catch (error) {
+      console.error("Error submitting outing request:", error)
+      toast.error("Failed to submit outing request")
     }
+  }
 
-    // Show success toast with Sonner
-    toast.success("Request Submitted", {
-      description: "Your outing request has been submitted successfully.",
-      icon: <CheckCircle2 className="h-4 w-4" />,
-      duration: 5000,
-    })
+  // Format date string
+  const formatDate = (dateString: string) => {
+    try {
+      return format(new Date(dateString), "PPP")
+    } catch (error) {
+      return "Invalid date"
+    }
+  }
 
-    // Close the dialog and show the status
-    setSubmitted(true)
-    setOpen(false)
+  // Get status badge
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "approved":
+        return <Badge className="bg-green-5000 hover:bg-green-600">Approved</Badge>
+      case "pending":
+        return <Badge className="bg-amber-500 hover:bg-amber-600">Pending</Badge>
+      case "rejected":
+        return <Badge className="bg-red-500 hover:bg-red-600">Rejected</Badge>
+      default:
+        return <Badge className="bg-gray-500 hover:bg-gray-600">Unknown</Badge>
+    }
   }
 
   return (
     <div className="container mx-auto py-8 px-4">
-      {!submitted ? (
-        <div className="flex flex-col items-center justify-center space-y-6">
-          <h1 className="text-2xl font-bold text-center">Student Outing Request</h1>
-          <p className="text-muted-foreground text-center max-w-md">
-            Click the button below to request permission for an outing from the hostel.
-          </p>
-          <Button size="lg" onClick={() => setOpen(true)} className="bg-emerald-600 hover:bg-emerald-700">
-            Request Outing
-          </Button>
-        </div>
-      ) : (
-        <Card className="max-w-md mx-auto shadow-md border border-muted/50">
+      <div className="flex flex-col items-center justify-center space-y-6 mb-8">
+        <h1 className="text-2xl font-bold text-center">Student Outing Request</h1>
+        <p className="text-muted-foreground text-center max-w-md">
+          Request permission for an outing from the hostel and view your outing history.
+        </p>
+        <Button size="lg" onClick={() => setOpen(true)} className="bg-emerald-600 hover:bg-emerald-700">
+          Request New Outing
+        </Button>
+      </div>
+
+      {submitted && (
+        <Card className="max-w-md mx-auto shadow-md border border-muted/50 mb-8">
           <CardHeader className="bg-muted/30">
             <CardTitle className="flex items-center justify-between">
               Outing Request
@@ -158,7 +215,9 @@ export default function RequestOuting() {
                 <CalendarIcon className="h-4 w-4" />
                 Outing Date
               </p>
-              <p className="font-medium">{form.getValues("outingDate") ? format(form.getValues("outingDate"), "PPP") : ""}</p>
+              <p className="font-medium">
+                {form.getValues("outingDate") ? format(form.getValues("outingDate"), "PPP") : ""}
+              </p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -180,16 +239,149 @@ export default function RequestOuting() {
               <p className="text-sm font-medium text-muted-foreground">Purpose</p>
               <p className="font-medium">{form.getValues("purpose")}</p>
             </div>
-            <Button 
-              variant="outline" 
-              className="w-full mt-4 border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800" 
-              onClick={() => setSubmitted(false)}
-            >
-              Request Another Outing
-            </Button>
           </CardContent>
         </Card>
       )}
+
+      {/* Outings History Tabs */}
+      <div className="max-w-4xl mx-auto mt-8">
+        <Tabs defaultValue="pending" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger
+              value="pending"
+              className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900"
+            >
+              Pending Outings ({pendingOutings.length})
+            </TabsTrigger>
+            <TabsTrigger
+              value="approved"
+              className="data-[state=active]:bg-green-100 data-[state=active]:text-green-900"
+            >
+              Approved Outings ({approvedOutings.length})
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pending" className="mt-4">
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-700"></div>
+              </div>
+            ) : pendingOutings.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {pendingOutings.map((outing: any, index: number) => (
+                  <Card key={index} className="shadow-sm border border-amber-200">
+                    <CardHeader className="bg-amber-50 pb-2">
+                      <CardTitle className="text-base flex items-center justify-between">
+                        <span className="flex items-center">
+                          <AlertCircle className="h-4 w-4 mr-2 text-amber-500" />
+                          Outing Request
+                        </span>
+                        {getStatusBadge(outing.status)}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-4">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Outing Date</p>
+                            <p className="font-medium">{formatDate(outing.outingDate)}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-muted-foreground">Request Date</p>
+                            <p className="text-sm">{formatDate(outing.requestDate)}</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Outing Time</p>
+                            <p className="font-medium">{outing.outingTime}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Return Time</p>
+                            <p className="font-medium">{outing.returnTime}</p>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Purpose</p>
+                          <p className="text-sm">{outing.purpose}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 bg-muted/20 rounded-lg">
+                <XCircle className="h-8 w-8 mx-auto text-muted-foreground/70" />
+                <p className="mt-2 text-muted-foreground">No pending outings found</p>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="approved" className="mt-4">
+            {isLoading ? (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-700"></div>
+              </div>
+            ) : approvedOutings.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {approvedOutings.map((outing: any, index: number) => (
+                  <Card key={index} className="shadow-sm border border-green-200">
+                    <CardHeader className="bg-green-500 pb-2">
+                      <CardTitle className="text-base flex items-center justify-between">
+                        <span className="flex items-center">
+                          <CheckCircle2 className="h-4 w-4 mr-2 text-green-500" />
+                          Approved Outing
+                        </span>
+                        {getStatusBadge(outing.status)}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-4">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Outing Date</p>
+                            <p className="font-medium">{formatDate(outing.outingDate)}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs text-muted-foreground">Approved On</p>
+                            <p className="text-sm">{outing.approvedDate ? formatDate(outing.approvedDate) : "N/A"}</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Outing Time</p>
+                            <p className="font-medium">{outing.outingTime}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Return Time</p>
+                            <p className="font-medium">{outing.returnTime}</p>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Purpose</p>
+                          <p className="text-sm">{outing.purpose}</p>
+                        </div>
+                        {outing.approvedBy && (
+                          <div>
+                            <p className="text-xs text-muted-foreground">Approved By</p>
+                            <p className="text-sm font-medium">{outing.approvedBy}</p>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 bg-muted/20 rounded-lg">
+                <XCircle className="h-8 w-8 mx-auto text-muted-foreground/70" />
+                <p className="mt-2 text-muted-foreground">No approved outings found</p>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[500px]">
@@ -218,10 +410,10 @@ export default function RequestOuting() {
                   <FormItem>
                     <FormLabel>Purpose of Outing</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Describe the purpose of your outing" 
+                      <Textarea
+                        placeholder="Describe the purpose of your outing"
                         className="resize-none border-muted-foreground/20 focus-visible:ring-emerald-500/30"
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -236,10 +428,10 @@ export default function RequestOuting() {
                   <FormItem>
                     <FormLabel>Father's Contact Number</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Enter father's contact number" 
+                      <Input
+                        placeholder="Enter father's contact number"
                         className="border-muted-foreground/20 focus-visible:ring-emerald-500/30"
-                        {...field} 
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -259,8 +451,8 @@ export default function RequestOuting() {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-full pl-3 text-left font-normal border-muted-foreground/20", 
-                              !field.value && "text-muted-foreground"
+                              "w-full pl-3 text-left font-normal border-muted-foreground/20",
+                              !field.value && "text-muted-foreground",
                             )}
                           >
                             {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
@@ -292,10 +484,10 @@ export default function RequestOuting() {
                       <FormLabel>Outing Time</FormLabel>
                       <FormControl>
                         <div className="flex items-center">
-                          <Input 
-                            type="time" 
+                          <Input
+                            type="time"
                             className="border-muted-foreground/20 focus-visible:ring-emerald-500/30"
-                            {...field} 
+                            {...field}
                           />
                           <Clock className="ml-2 h-4 w-4 text-muted-foreground" />
                         </div>
@@ -313,10 +505,10 @@ export default function RequestOuting() {
                       <FormLabel>Return Time</FormLabel>
                       <FormControl>
                         <div className="flex items-center">
-                          <Input 
-                            type="time" 
+                          <Input
+                            type="time"
                             className="border-muted-foreground/20 focus-visible:ring-emerald-500/30"
-                            {...field} 
+                            {...field}
                           />
                           <Clock className="ml-2 h-4 w-4 text-muted-foreground" />
                         </div>
@@ -328,10 +520,7 @@ export default function RequestOuting() {
               </div>
 
               <DialogFooter className="pt-2">
-                <Button 
-                  type="submit" 
-                  className="bg-emerald-600 hover:bg-emerald-700"
-                >
+                <Button type="submit" className="bg-emerald-600 hover:bg-emerald-700">
                   Submit Request
                 </Button>
               </DialogFooter>
@@ -342,3 +531,4 @@ export default function RequestOuting() {
     </div>
   )
 }
+

@@ -40,6 +40,15 @@ outingsApp.put("/update-outing/:id", expressAsyncHandler(async (req, res) => {
       data: result})
 }))
 
+outingsApp.get("/get-outings/:rollno", expressAsyncHandler(async (req, res) => {
+    const rollno = req.params.rollno;
+    console.log(rollno);
+    const outings = await outingsCollection.find({ rollno: rollno }).toArray();
+    console.log(outings);
+    res.send({
+      success: true,
+      data: outings})
+}))
 
 
 module.exports = outingsApp;
