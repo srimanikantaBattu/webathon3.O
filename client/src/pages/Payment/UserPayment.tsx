@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import axios from "axios"
+import jsPDF from "jspdf"
 import {
   CheckCircle,
   Clock,
@@ -166,6 +167,74 @@ export default function FeePayment() {
 
   const sem1DaysInfo = getDaysRemaining(sem1dueDate)
   const sem2DaysInfo = getDaysRemaining(sem2dueDate)
+
+  const downloadReceipt = (semester: number) => {
+    // Create a new PDF document
+    const doc = new jsPDF()
+    const pageWidth = doc.internal.pageSize.getWidth()
+
+    // Add university logo/header
+    doc.setFontSize(20)
+    doc.setFont("helvetica", "bold")
+    doc.text("University Payment Portal", pageWidth / 2, 20, { align: "center" })
+
+    // Add receipt title
+    doc.setFontSize(16)
+    doc.text(`Semester ${semester} Payment Receipt`, pageWidth / 2, 30, { align: "center" })
+
+    // Add horizontal line
+    doc.setLineWidth(0.5)
+    doc.line(20, 35, pageWidth - 20, 35)
+
+    // Add receipt details
+    doc.setFontSize(12)
+    doc.setFont("helvetica", "normal")
+
+    // Receipt ID
+    const receiptId = `SEM${semester}-${currentYear}-${Math.floor(Math.random() * 10000)}`
+    doc.text("Receipt ID:", 20, 50)
+    doc.text(receiptId, 80, 50)
+
+    // Student details
+    doc.text("Student Email:", 20, 60)
+    doc.text(data.email || "Not specified", 80, 60)
+
+    // Academic details
+    doc.text("Academic Year:", 20, 70)
+    doc.text(`${currentYear}`, 80, 70)
+
+    doc.text("Year:", 20, 80)
+    doc.text(`${data.year}`, 80, 80)
+
+    doc.text("Semester:", 20, 90)
+    doc.text(`${semester}`, 80, 90)
+
+    // Payment details
+    doc.text("Amount Paid:", 20, 100)
+    doc.text("₹65,000.00", 80, 100)
+
+    doc.text("Payment Date:", 20, 110)
+    doc.text(new Date().toLocaleDateString(), 80, 110)
+
+    doc.text("Payment Method:", 20, 120)
+    doc.text("Razorpay", 80, 120)
+
+    // Add payment status
+    doc.text("Payment Status:", 20, 130)
+    doc.text("PAID", 80, 130)
+
+    // Add footer
+    doc.setFontSize(10)
+    doc.text("This is an electronically generated receipt and does not require a signature.", pageWidth / 2, 150, {
+      align: "center",
+    })
+    doc.text(`© ${currentYear} University Payment Portal. All rights reserved.`, pageWidth / 2, 160, {
+      align: "center",
+    })
+
+    // Save the PDF
+    doc.save(`semester${semester}_receipt_${receiptId}.pdf`)
+  }
 
   return (
     <div className="container mx-auto p-4 space-y-8">
@@ -373,7 +442,7 @@ export default function FeePayment() {
                         </div>
                       </div>
 
-                      <Button variant="outline" className="w-full">
+                      <Button variant="outline" className="w-full" onClick={() => downloadReceipt(1)}>
                         <Receipt className="mr-2 h-4 w-4" /> Download Receipt
                       </Button>
                     </div>
@@ -524,7 +593,7 @@ export default function FeePayment() {
                         </div>
                       </div>
 
-                      <Button variant="outline" className="w-full">
+                      <Button variant="outline" className="w-full" onClick={() => downloadReceipt(2)}>
                         <Receipt className="mr-2 h-4 w-4" /> Download Receipt
                       </Button>
                     </div>
@@ -600,3 +669,4 @@ export default function FeePayment() {
     </div>
   )
 }
+

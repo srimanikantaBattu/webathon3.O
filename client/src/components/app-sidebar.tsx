@@ -206,11 +206,6 @@ const adminData = {
       title: "Analytics",
       url: "/admin/feedback",
       icon: IconFolder,
-    },
-    {
-      title: "Menu Edit",
-      url: "/admin/menu",
-      icon: IconUsers,
     }
   ],
   navClouds: [
