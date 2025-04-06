@@ -96,6 +96,8 @@ function UploadComplaint() {
     formData.append("category", complaint.category)
     formData.append("urgency", complaint.urgency)
     console.log(formData)
+     const result = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_URL}/complaints-api/upload`, formData)
+     console.log(result.data)
 
     try {
 
