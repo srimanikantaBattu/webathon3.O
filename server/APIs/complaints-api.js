@@ -7,7 +7,8 @@ const cors = require('cors');
 const multer = require('multer');
 const { S3Client , PutObjectCommand , GetObjectCommand , DeleteObjectCommand } = require('@aws-sdk/client-s3');
 const crypto = require('crypto');
-const {getSignedUrl} = require('@aws-sdk/s3-request-presigner')
+const {getSignedUrl} = require('@aws-sdk/s3-request-presigner');
+const { stat } = require('fs');
 var ObjectId = require('mongodb').ObjectId;
 
 let complaintsCollection;
@@ -44,7 +45,7 @@ complaintApp.post('/upload', upload.single('file'), expressAsyncHandler(async (r
         };
         const command = new PutObjectCommand(params);
         await s3.send(command);
-        const post = await complaintsCollection.insertOne({imageName: imageName, title: req.body.title, description: req.body.description, location: req.body.location, category: req.body.category, urgency: req.body.urgency});
+        const post = await complaintsCollection.insertOne({imageName: imageName, title: req.body.title, description: req.body.description, location: req.body.location, category: req.body.category, urgency: req.body.urgency,status: "pending"});
         res.status(200).send({ message: 'File uploaded successfully' });
     } catch (error) {
         console.error('AWS Upload Error:', error);
@@ -61,10 +62,19 @@ complaintApp.get('/files', expressAsyncHandler(async (req, res) => {
         };
         const command = new GetObjectCommand(getObjParams)
         const url = await getSignedUrl(s3, command, { expiresIn: 3600 })
-        file.imageUrl = url
+        file.imageUrl = url;
     }
-    console.log(files);
     res.send(files);
+}));
+
+complaintApp.put('/update/:id', expressAsyncHandler(async (req, res) => {
+    const id = req.params.id;
+    const updatedData = req.body;
+    const result = await complaintsCollection.updateOne({ _id: new ObjectId(id) }, { $set: {status:"approved"} });
+    res.send({
+        success: true,
+        data: result
+    });
 }));
 
 module.exports = complaintApp

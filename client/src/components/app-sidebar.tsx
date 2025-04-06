@@ -180,7 +180,7 @@ const adminData = {
     },
     {
       title: "Complaint Section",
-      url: "/upload-complaint",
+      url: "/admin/complaints",
       icon: IconFolder,
     },
     {
