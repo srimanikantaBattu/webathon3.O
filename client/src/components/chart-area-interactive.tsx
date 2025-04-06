@@ -131,11 +131,11 @@ const chartConfig = {
     label: "Visitors",
   },
   desktop: {
-    label: "Desktop",
+    label: "New Visitors",
     color: "var(--chart-1)",
   },
   mobile: {
-    label: "Mobile",
+    label: "Returning Visitors",
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig
