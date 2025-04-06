@@ -110,7 +110,7 @@ export default function LoginForm({
               </form>
               <div className="relative hidden bg-muted md:block">
                 <img
-                  alt="Image"
+                  src="https://lh3.googleusercontent.com/p/AF1QipNAfQPEyDlXqsQZPW-2DyzdgUE8uW7qe8wEYSiF=s1360-w1360-h1020"
                   className="absolute inset-0 h-full w-full object-cover"
                 />
               </div>

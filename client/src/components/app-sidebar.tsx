@@ -42,6 +42,11 @@ const userData = {
   },
   navMain: [
     {
+      title: "Dashboard",
+      url: "dashboard",
+      icon: IconDashboard,
+    },
+    {
       title: "Slot Booking",
       url: "campus-map",
       icon: IconDashboard,

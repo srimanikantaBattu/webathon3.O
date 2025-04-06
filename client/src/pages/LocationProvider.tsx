@@ -103,8 +103,8 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children, go
           children
         ) : (
           <div>
-            <p>Please enable location access to use the app.</p>
-            <button onClick={requestLocationPermission}>Grant Location Access</button>
+            <p></p>
+            <button onClick={requestLocationPermission}></button>
           </div>
         )}
       </LoadScript>

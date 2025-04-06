@@ -14,11 +14,13 @@ import RequestOuting from "./pages/Attendance/RequestOuting";
 import CheckOutings from "./pages/Attendance/CheckOutings";
 import MenuDisplay from "./pages/Mess/Menudisplay";
 import StudentFeedbackForm from "./pages/Mess/FeedbackForm";
+import AdminComplaints from "./pages/Complaints/AdminComplaints";
 import AdminFeedbackList from "./pages/Mess/AdminFeedbackView";
 import AdminMenuEdit from "./pages/Mess/AdminMenuEdit";
 import RoomAllocation from "./pages/RoomAllocation/RoomAllocation";
 import CampusMap from "./pages/Playground/CampusMap";
 import NearbyUsers from "./pages/NearByUsers";
+import { LocationProvider } from "./pages/LocationProvider";
 function App() {
   const router = createBrowserRouter([
     {
@@ -78,15 +80,24 @@ function App() {
         },{
           path:"/find",
           element:<NearbyUsers/>
+        },{
+          path:"/dashboard",
+          element:<Dashboard/>
+        },{
+          path:"/admin/complaints",
+          element:<AdminComplaints/>
         }
       ]
     }
   ]);
+  const googleMapsApiKey = "AIzaSyCNkYKo3Q7EcMi1rSaQm28KuJczCqI0JcE";
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div className="">
-        <RouterProvider router={router}></RouterProvider>
-      </div>
+      <LocationProvider googleMapsApiKey={googleMapsApiKey}>
+        <div>
+          <RouterProvider router={router} />
+        </div>
+      </LocationProvider>
       <Toaster richColors position="top-right" />
     </ThemeProvider>
     

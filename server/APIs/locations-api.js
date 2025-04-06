@@ -37,55 +37,58 @@
 
 
     locationsApp.get('/nearby-users', async (req, res) => {
-    const referencePoint = {
-        type: "Point",
-        coordinates: [78.393421, 17.538830], // [longitude, latitude]
-    };
-
-    try {
-        const allNearby = await locationsCollection.find({
-        coordinates: {
-            $near: {
-            $geometry: referencePoint,
-            $maxDistance: 500 // 5km range
-            },
-        },
-        }).project({ username: 1, coordinates: 1, _id: 0 }).toArray();
-
-        // Helper: Haversine formula to calculate distance
-        const getDistanceInMeters = (coord1, coord2) => {
-        const toRad = deg => deg * Math.PI / 180;
-        const R = 6371e3; // meters
-        const [lon1, lat1] = coord1;
-        const [lon2, lat2] = coord2;
-
-        const φ1 = toRad(lat1);
-        const φ2 = toRad(lat2);
-        const Δφ = toRad(lat2 - lat1);
-        const Δλ = toRad(lon2 - lon1);
-
-        const a = Math.sin(Δφ / 2) ** 2 +
-                    Math.cos(φ1) * Math.cos(φ2) *
-                    Math.sin(Δλ / 2) ** 2;
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        return R * c;
+        const referencePoint = {
+          type: "Point",
+          coordinates: [78.393421, 17.538830], // [longitude, latitude]
         };
-
-        const outside500m = allNearby.filter(user => {
-        const distance = getDistanceInMeters(referencePoint.coordinates, user.coordinates.coordinates);
-        return distance > 500;
-        });
-
-        res.json({ nearbyUsers: outside500m });
-    } catch (error) {
-        console.error("Error finding nearby users:", error);
-        res.status(500).json({
-        message: 'Error finding nearby users',
-        error: error.message,
-        });
-    }
-    });
+      
+        try {
+          const allUsers = await locationsCollection.find({
+            coordinates: {
+              $near: {
+                $geometry: referencePoint
+                // NO $maxDistance here
+              },
+            },
+          })
+            .project({ username: 1, coordinates: 1, _id: 0 })
+            .toArray();
+      
+          // Haversine formula
+          const getDistanceInMeters = (coord1, coord2) => {
+            const toRad = deg => deg * Math.PI / 180;
+            const R = 6371e3;
+            const [lon1, lat1] = coord1;
+            const [lon2, lat2] = coord2;
+      
+            const φ1 = toRad(lat1);
+            const φ2 = toRad(lat2);
+            const Δφ = toRad(lat2 - lat1);
+            const Δλ = toRad(lon2 - lon1);
+      
+            const a = Math.sin(Δφ / 2) ** 2 +
+                      Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      
+            return R * c;
+          };
+      
+          // Filter users who are >500 meters
+          const outside500m = allUsers.filter(user => {
+            const distance = getDistanceInMeters(referencePoint.coordinates, user.coordinates.coordinates);
+            return distance > 500;
+          });
+      
+          res.json({ nearbyUsers: outside500m });
+        } catch (error) {
+          console.error("Error finding nearby users:", error);
+          res.status(500).json({
+            message: 'Error finding nearby users',
+            error: error.message,
+          });
+        }
+      });
+      
 
     locationsApp.get("/location/:username", async (req, res) => {
     const username = req.params.username;

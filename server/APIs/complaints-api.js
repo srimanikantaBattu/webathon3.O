@@ -62,8 +62,8 @@ complaintApp.get('/files', expressAsyncHandler(async (req, res) => {
         const command = new GetObjectCommand(getObjParams)
         const url = await getSignedUrl(s3, command, { expiresIn: 3600 })
         file.imageUrl = url
-
     }
+    console.log(files);
     res.send(files);
 }));
 
