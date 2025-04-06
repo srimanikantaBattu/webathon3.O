@@ -51,13 +51,6 @@ type YearFeeDetails = {
   semester2DueDate: Date
 }
 
-type AllFeesFormValues = {
-  year1: YearFeeDetails
-  year2: YearFeeDetails
-  year3: YearFeeDetails
-  year4: YearFeeDetails
-}
-
 export default function FeeManagementPage() {
   const [submittedData, setSubmittedData] = useState<any[]>([])
   const [activeTab, setActiveTab] = useState("year1")
@@ -101,8 +94,6 @@ export default function FeeManagementPage() {
 
     // Set the submitted data for display
     setSubmittedData(formattedData)
-
-    const result = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_URL}/payments-api/add-payment`, { data: formattedData } )
 
     // Show success toast with Sonner
     toast.success("Fee details saved", {

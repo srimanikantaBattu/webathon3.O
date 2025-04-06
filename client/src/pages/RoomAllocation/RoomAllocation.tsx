@@ -9,8 +9,33 @@ import { Building, Building2, Layers, Users, UserPlus, UserMinus, ClipboardList 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
+// Define types for the data
+interface Student {
+  id: number
+  name: string
+  year: string
+  department: string
+}
+
+interface Room {
+  id: number
+  capacity: number
+  occupants: number
+  blockId: number
+  floorId: number
+  assignedStudents: Student[]
+}
+
+interface RoomsMap {
+  [key: string]: Room[]
+}
+
+interface VacantRoomsMap {
+  [key: string]: Room[]
+}
+
 // Mock data for demonstration
-const mockStudents = [
+const mockStudents: Student[] = [
   { id: 1, name: "Alex Johnson", year: "2nd Year", department: "Computer Science" },
   { id: 2, name: "Sam Wilson", year: "1st Year", department: "Electrical Engineering" },
   { id: 3, name: "Jamie Smith", year: "3rd Year", department: "Mechanical Engineering" },
@@ -29,10 +54,10 @@ const mockStudents = [
 ]
 
 // Generate mock room data with assigned students
-const generateRooms = (blockId:any, floorId:any) => {
+const generateRooms = (blockId: number, floorId: number): Room[] => {
   return Array.from({ length: 12 }, (_, i) => {
     const occupants = Math.floor(Math.random() * 4)
-    const assignedStudents = []
+    const assignedStudents: Student[] = []
 
     // Randomly assign students to rooms
     if (occupants > 0) {
@@ -58,37 +83,37 @@ const generateRooms = (blockId:any, floorId:any) => {
 }
 
 const RoomAllocation = () => {
-
-  const [selectedBlock, setSelectedBlock] = useState(null)
-  const [selectedFloor, setSelectedFloor] = useState(null)
-  const [selectedRoom, setSelectedRoom] = useState(null)
-  const [rooms, setRooms] = useState([])
-  const [allRooms, setAllRooms] = useState({})
-  const [showAllocationDialog, setShowAllocationDialog] = useState(false)
-  const [showOccupantsDialog, setShowOccupantsDialog] = useState(false)
-  const [viewMode, setViewMode] = useState("normal") // 'normal' or 'vacancies'
-  const [vacantRooms, setVacantRooms] = useState({})
+  const [selectedBlock, setSelectedBlock] = useState<number | null>(null)
+  const [selectedFloor, setSelectedFloor] = useState<number | null>(null)
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
+  const [rooms, setRooms] = useState<Room[]>([])
+  const [allRooms, setAllRooms] = useState<RoomsMap>({})
+  const [showAllocationDialog, setShowAllocationDialog] = useState<boolean>(false)
+  const [showOccupantsDialog, setShowOccupantsDialog] = useState<boolean>(false)
+  const [viewMode, setViewMode] = useState<"normal" | "vacancies">("normal") // 'normal' or 'vacancies'
+  const [vacantRooms, setVacantRooms] = useState<VacantRoomsMap>({})
 
   // Initialize or update rooms when block/floor changes
   useEffect(() => { 
     if (selectedBlock && selectedFloor) {
-      if (!allRooms[`block${selectedBlock}-floor${selectedFloor}`]) {
+      const key = `block${selectedBlock}-floor${selectedFloor}`
+      if (!allRooms[key]) {
         const newRooms = generateRooms(selectedBlock, selectedFloor)
-        setRooms(newRooms)``
+        setRooms(newRooms)
         setAllRooms((prev) => ({
           ...prev,
-          [`block${selectedBlock}-floor${selectedFloor}`]: newRooms,
+          [key]: newRooms,
         }))
       } else {
-        setRooms(allRooms[`block${selectedBlock}-floor${selectedFloor}`])
+        setRooms(allRooms[key])
       }
     }
-  }, [selectedBlock, selectedFloor])
+  }, [selectedBlock, selectedFloor, allRooms])
 
   // Update vacant rooms when block changes or rooms are updated
   useEffect(() => {
     if (selectedBlock) {
-      const vacant = {}
+      const vacant: VacantRoomsMap = {}
 
       // Generate all floors if they don't exist yet
       for (let floor = 1; floor <= 10; floor++) {
@@ -114,7 +139,7 @@ const RoomAllocation = () => {
   }, [selectedBlock, allRooms])
 
   // Function to handle block selection
-  const handleBlockSelect = (blockId) => {
+  const handleBlockSelect = (blockId: number) => {
     setSelectedBlock(blockId)
     setSelectedFloor(null)
     setSelectedRoom(null)
@@ -122,14 +147,14 @@ const RoomAllocation = () => {
   }
 
   // Function to handle floor selection
-  const handleFloorSelect = (floorId) => {
+  const handleFloorSelect = (floorId: number) => {
     setSelectedFloor(floorId)
     setSelectedRoom(null)
     setViewMode("normal")
   }
 
   // Function to handle room selection
-  const handleRoomSelect = (room) => {
+  const handleRoomSelect = (room: Room) => {
     setSelectedRoom(room)
   }
 
@@ -140,9 +165,9 @@ const RoomAllocation = () => {
   }
 
   // Function to add a student to a room
-  const addStudentToRoom = (studentId) => {
+  const addStudentToRoom = (studentId: number) => {
     const student = mockStudents.find((s) => s.id === studentId)
-    if (!student) return
+    if (!student || !selectedRoom) return
 
     const updatedRooms = rooms.map((room) => {
       if (room.id === selectedRoom.id) {
@@ -161,7 +186,9 @@ const RoomAllocation = () => {
   }
 
   // Function to remove a student from a room
-  const removeStudentFromRoom = (studentId) => {
+  const removeStudentFromRoom = (studentId: number) => {
+    if (!selectedRoom) return
+
     const updatedRooms = rooms.map((room) => {
       if (room.id === selectedRoom.id) {
         const updatedAssignedStudents = room.assignedStudents.filter((student) => student.id !== studentId)
@@ -180,7 +207,9 @@ const RoomAllocation = () => {
   }
 
   // Helper function to update the allRooms state
-  const updateAllRooms = (updatedRooms) => {
+  const updateAllRooms = (updatedRooms: Room[]) => {
+    if (!selectedBlock || !selectedFloor) return
+
     setAllRooms((prev) => ({
       ...prev,
       [`block${selectedBlock}-floor${selectedFloor}`]: updatedRooms,
@@ -188,7 +217,7 @@ const RoomAllocation = () => {
   }
 
   // Function to get available students (not already assigned to the selected room)
-  const getAvailableStudents = () => {
+  const getAvailableStudents = (): Student[] => {
     if (!selectedRoom) return mockStudents
 
     const assignedStudentIds = selectedRoom.assignedStudents.map((student) => student.id)
@@ -214,7 +243,7 @@ const RoomAllocation = () => {
                   <Button
                     key={blockId}
                     variant="outline"
-                    className="h-16 border-black  hover:bg-blue-900 hover:text-white"
+                    className="h-16 border-black hover:bg-blue-900 hover:text-white"
                     onClick={() => handleBlockSelect(blockId)}
                   >
                     Block {blockId}
@@ -230,7 +259,7 @@ const RoomAllocation = () => {
                 <h2 className="text-xl font-semibold flex items-center">
                   <Layers className="mr-2" /> Select Floor
                 </h2>
-                <Button variant="outline" size="sm" onClick={() => setSelectedBlock(null)} className="border-black  hover:cursor-pointer">
+                <Button variant="outline" size="sm" onClick={() => setSelectedBlock(null)} className="border-black hover:cursor-pointer">
                   Back to Blocks
                 </Button>
               </div>
@@ -239,7 +268,7 @@ const RoomAllocation = () => {
                   <Button
                     key={floorId}
                     variant="outline"
-                    className="h-12 border-black  hover:bg-blue-900 hover:text-white hover:cursor-pointer"
+                    className="h-12 border-black hover:bg-blue-900 hover:text-white hover:cursor-pointer"
                     onClick={() => handleFloorSelect(floorId)}
                   >
                     Floor {floorId}
@@ -265,7 +294,7 @@ const RoomAllocation = () => {
                 <h2 className="text-xl font-semibold flex items-center">
                   <ClipboardList className="mr-2" /> Vacancies View
                 </h2>
-                <Button variant="outline" size="sm" onClick={() => toggleVacanciesView()} className="border-black  hover:cursor-pointer">
+                <Button variant="outline" size="sm" onClick={() => toggleVacanciesView()} className="border-black hover:cursor-pointer">
                   Normal View
                 </Button>
               </div>
@@ -273,7 +302,7 @@ const RoomAllocation = () => {
                 variant="outline"
                 size="sm"
                 onClick={() => setSelectedBlock(null)}
-                className="border-black mb-4 w-full  hover:cursor-pointer"
+                className="border-black mb-4 w-full hover:cursor-pointer"
               >
                 Back to Blocks
               </Button>
@@ -288,14 +317,14 @@ const RoomAllocation = () => {
               <div className="space-y-3">
                 <Button
                   variant="outline"
-                  className="w-full  justify-start border-black hover:bg-blue-900 hover:text-white hover:cursor-pointer" 
+                  className="w-full justify-start border-black hover:bg-blue-900 hover:text-white hover:cursor-pointer" 
                   onClick={() => setSelectedBlock(null)}
                 >
                   ← All Blocks
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full  justify-start border-black hover:bg-blue-900 hover:text-white hover:cursor-pointer"
+                  className="w-full justify-start border-black hover:bg-blue-900 hover:text-white hover:cursor-pointer"
                   onClick={() => setSelectedFloor(null)}
                 >
                   ← Block {selectedBlock} Floors
@@ -388,7 +417,7 @@ const RoomAllocation = () => {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="flex-1  border-black hover:bg-blue-900"
+                                  className="flex-1 border-black hover:bg-blue-900"
                                   onClick={() => {
                                     setSelectedFloor(Number.parseInt(floor))
                                     setSelectedRoom(room)
@@ -400,7 +429,7 @@ const RoomAllocation = () => {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="flex-1  border-black hover:bg-blue-900"
+                                  className="flex-1 border-black hover:bg-blue-900"
                                   onClick={() => {
                                     setSelectedFloor(Number.parseInt(floor))
                                     handleFloorSelect(Number.parseInt(floor))
@@ -470,7 +499,7 @@ const RoomAllocation = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            className="flex-1  border-black hover:bg-blue-900 hover:text-white"
+                            className="flex-1 border-black hover:bg-blue-900 hover:text-white"
                             onClick={(e) => {
                               e.stopPropagation()
                               handleRoomSelect(room)
@@ -528,10 +557,10 @@ const RoomAllocation = () => {
             </DialogTitle>
           </DialogHeader>
           <div className="py-4">
-            {selectedRoom?.assignedStudents?.length > 0 ? (
+            {selectedRoom?.assignedStudents?.length ? (
               <ScrollArea className="h-[300px] rounded-md border border-black p-4">
                 <div className="space-y-4">
-                  {selectedRoom?.assignedStudents.map((student) => (
+                  {selectedRoom.assignedStudents.map((student) => (
                     <div
                       key={student.id}
                       className="p-3 border border-black rounded-lg flex justify-between items-center"
@@ -569,4 +598,3 @@ const RoomAllocation = () => {
 }
 
 export default RoomAllocation
-
