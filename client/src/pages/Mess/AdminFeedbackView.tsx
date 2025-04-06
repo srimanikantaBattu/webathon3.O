@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
-import { FiUser, FiMail, FiStar, FiMessageSquare, FiTrash2, FiFilter } from "react-icons/fi"
+import { FiMail, FiStar, FiMessageSquare, FiFilter } from "react-icons/fi"
 import { FaUtensils, FaHandSparkles, FaConciergeBell } from "react-icons/fa"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 import {
@@ -10,7 +10,6 @@ import {
   CardContent,
   CardDescription,
 } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
@@ -18,10 +17,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 interface Feedback {
@@ -219,7 +217,7 @@ export default function AdminFeedbackList() {
                     animationDuration={1500}
                   >
                     {barChartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell key={`cell-${index}${entry.name}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -246,7 +244,7 @@ export default function AdminFeedbackList() {
                     label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                   >
                     {ratingDistributionData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell key={`cell-${index}${entry.name}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip 

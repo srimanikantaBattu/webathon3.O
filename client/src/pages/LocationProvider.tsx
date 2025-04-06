@@ -69,7 +69,7 @@ export const LocationProvider: React.FC<LocationProviderProps> = ({ children, go
           setPermissionGranted(true);
           sendLocationToBackend(latitude, longitude);
         },
-        (err) => {
+        (err:any) => {
           setError('Location access denied or unavailable');
         }
       );

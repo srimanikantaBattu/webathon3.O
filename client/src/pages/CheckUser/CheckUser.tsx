@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { toast } from "sonner"
 import { Camera, CheckCircle, Loader2, Search, User, UserCheck, UserX } from "lucide-react"
@@ -31,7 +31,7 @@ type Student = {
   name: string
   rollNo: string
   imgUrl: string
-  status: "present" | "absent"
+  status: string
   lastMarked: string
 }
 

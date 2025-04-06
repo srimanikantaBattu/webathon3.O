@@ -98,7 +98,6 @@ function UploadComplaint() {
     console.log(formData)
 
     try {
-      const result = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_URL}/complaints-api/upload`, formData)
 
       // Reset form on success
       setFile(null)
